@@ -12,19 +12,21 @@ C++17 constexpr, SIMD-aware math library for games
   - [ ] OBB, AABB
   - [ ] Frustum
 - [ ] Properties (priority sorted)
-  - [ ] SIMD
-    - [ ] Support run-time evaluation as well as compile-time
-  - [ ] constexpr
-  - [ ] Compatible with C++20/C++23/C++26 (https://en.cppreference.com/w/cpp/numeric)
-  - [ ] IEEE floating-point arithmetic compliant
-  - [ ] HLSL/GLSL compatible
-    - [ ] Swizzling
-    - [ ] Memory layout compatible
   - [ ] Generated
-    - [ ] Configurable like GLAD (https://github.com/Dav1dde/glad)
+    - [ ] Configurable like [GLAD](https://github.com/Dav1dde/glad) with options:
+      - [ ] Each scalar C++ type as an option (int/short/unsigned int/float/double/long double/etc)
+      - [ ] SIMD
+        - [ ] Run-time SIMD evaluation
+      - [ ] Compile-time evaluation (constexpr support)
+      - [ ] Precise/approximated math
+        - [ ] Precise math should [IEEE-754](https://en.wikipedia.org/wiki/IEEE_754) be compliant
+        - [ ] Control precision/approximation control via tags (that are arguments to functions)?
+      - [ ] Swizzles (like in hlsl/glsl)
+  - [ ] Compatible with [C++20/C++23/C++26 standard library improvements](https://en.cppreference.com/w/cpp/numeric)
+  - [ ] HLSL/GLSL compatible
+    - [ ] Memory layout compatible
   - [ ] C support
-    - [ ] At least memory layout compatible
-      - [ ] Use same types for C and C++ if possible.
+    - [ ] At least memory layout compatible, use same types for C and C++ if possible.
 
 ## Libraries to look at to get inspiration and ideas
 - https://github.com/redorav/hlslpp
@@ -50,3 +52,7 @@ C++17 constexpr, SIMD-aware math library for games
 - https://github.com/jfalcou/eve
 - https://github.com/gnuradio/volk
 - https://github.com/jeffamstutz/tsimd
+
+### Generators
+- https://github.com/pantor/inja
+- https://github.com/pallets/jinja
