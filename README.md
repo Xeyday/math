@@ -14,14 +14,18 @@ C++17 constexpr, SIMD-aware math library for games
 - [ ] Properties (priority sorted)
   - [ ] Generated
     - [ ] Configurable like [GLAD](https://github.com/Dav1dde/glad) with options:
+      - [ ] Header-only
+        - [ ] Single-header/many headers
+      - [ ] Shared/static library 
       - [ ] Each scalar C++ type as an option (int/short/unsigned int/float/double/long double/etc)
       - [ ] SIMD
         - [ ] Run-time SIMD evaluation
       - [ ] Compile-time evaluation (constexpr support)
       - [ ] Precise/approximated math
         - [ ] Precise math should [IEEE-754](https://en.wikipedia.org/wiki/IEEE_754) be compliant
-        - [ ] Control precision/approximation control via tags (that are arguments to functions)?
+        - [ ] Control precision/approximation control via tags (that are arguments to functions) or via qualifier like in [glm](https://github.com/g-truc/glm)?
       - [ ] Swizzles (like in hlsl/glsl)
+      - [ ] Left/right handed
   - [ ] Compatible with [C++20/C++23/C++26 standard library improvements](https://en.cppreference.com/w/cpp/numeric)
   - [ ] HLSL/GLSL compatible
     - [ ] Memory layout compatible
@@ -30,6 +34,7 @@ C++17 constexpr, SIMD-aware math library for games
 
 ## Libraries to look at to get inspiration and ideas
 - https://github.com/redorav/hlslpp
+- https://github.com/g-truc/glm
 - https://github.com/kthohr/gcem
 - https://github.com/Morwenn/static_math
 - https://github.com/nfrechette/rtm
