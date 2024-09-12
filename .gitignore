@@ -1,32 +1,10 @@
-# Prerequisites
-*.d
+# exclude all dot files except .git
+.*
+!.git*
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+# exclude standard build folders
+[bB]uild*/
+[oO]ut*/
 
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+# exclude generation results
+generated/
