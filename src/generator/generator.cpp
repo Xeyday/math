@@ -57,6 +57,7 @@ generator::generator(const generator_options& options /*= {}*/) noexcept
     print_option(namespace_name);
     print_option(input_path);
     print_option(output_path);
+    print_option(everything);
     print_option(xyzw_only);
     print_option(swizzles);
     print_option(single_header);

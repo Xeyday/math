@@ -15,6 +15,10 @@ struct generator_options
     /// Customize the namespace. Use empty name to disable namespacing
     std::string namespace_name  { "xgm" };
 
+    /// Generate all possible combinations of options below.
+    /// Usually meant for testing
+    bool        everything      { true };
+
     /// Only xyzw members, no rgba/stpq
     bool        xyzw_only       { false };
 

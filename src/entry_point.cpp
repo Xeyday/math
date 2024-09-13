@@ -38,6 +38,11 @@ int main(int argc, char* argv[])
         .implicit_value("")
         .help("Customize the namespace. Use empty name to disable namespacing");
 
+    program.add_argument("-test", "--everything")
+        .action(store_into{ options.everything })
+        .implicit_value(true)
+        .help("Generate all possible combinations of options. Usually, meant for testing purposes");
+
     program.add_argument("-xyzw", "--xyzw_only")
         .action(store_into{ options.xyzw_only })
         .implicit_value(true)

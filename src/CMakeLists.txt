@@ -10,7 +10,7 @@ FetchContent_MakeAvailable(argparse)
 add_executable(xeyday.math.generator-cli)
 
 target_sources(xeyday.math.generator-cli
-    PUBLIC
+    PRIVATE
     "entry_point.cpp"
 )
 
