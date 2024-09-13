@@ -19,7 +19,7 @@ struct generator_options
     bool        xyzw_only       { false };
 
     /// Generate swizzle members
-    bool        swizzle_support { true };
+    bool        swizzles        { true };
 
     /// Put everything into single header
     bool        single_header   { false };
@@ -35,7 +35,7 @@ class generator
     generator_options m_options;
 
 public:
-    explicit generator(const generator_options& options);
+    explicit generator(const generator_options& options) noexcept;
 
     bool generate();
 };
