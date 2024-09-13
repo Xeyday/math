@@ -1,0 +1,131 @@
+name: Build and test
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  cmake:
+    name: ${{ matrix.platform.name }} ${{ matrix.configuration }} ${{ matrix.platform.arch }} (${{ matrix.platform.cc || 'unknown compiler' }})
+    runs-on: ${{ matrix.platform.os }}
+    container: ${{ matrix.platform.container || '' }}
+    defaults:
+      run:
+        shell: ${{ matrix.platform.shell || 'bash -e {0}' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        # cc is always set for the correct naming of the job.
+        # Both cc and cxx should be set if we want to change the compiler.
+        - { name: Windows, os: windows-latest, arch: x64,   cc: cl, }
+        - { name: Windows, os: windows-latest, arch: x86,   cc: cl, }
+        - { name: Ubuntu, os: ubuntu-latest, arch: amd64,   cc: gcc, }
+        - { name: Ubuntu, os: ubuntu-latest, arch: amd64,   cc: clang, cxx: clang++ }
+        - { name: Alpine, os: ubuntu-latest, arch: x86_64,  cc: gcc,                 shell: 'alpine.sh {0}' }
+        - { name: Alpine, os: ubuntu-latest, arch: x86,     cc: gcc,                 shell: 'alpine.sh {0}' }
+        - { name: Fedora, os: ubuntu-latest, arch: x86_64,  cc: gcc,                 container: 'fedora:latest', }
+        - { name: macOS,  os: macos-13,      arch: x86_64,  cc: clang, }
+        - { name: macOS,  os: macos-14,      arch: arm64,   cc: clang, threads: 3 }
+        configuration: [Debug, Release]
+
+    steps:
+    - name: Install latest stable Alpine Linux and packages
+      if: ${{ matrix.platform.name == 'Alpine' }}
+      uses: jirutka/setup-alpine@master
+      with:
+        arch: ${{ matrix.platform.arch }}
+        branch: 'latest-stable'
+        packages: build-base cmake git
+
+    - name: Install Fedora packages
+      if: ${{ matrix.platform.name == 'Fedora' }}
+      run: dnf install -y git cmake rpmdevtools
+
+    - name: Install GCC Fedora package
+      if: ${{ matrix.platform.name == 'Fedora' && matrix.platform.cc == 'gcc' }}
+      run: dnf install -y gcc gcc-c++
+
+    - name: Set environment variables
+      if: ${{ matrix.platform.cc != '' && matrix.platform.cxx != '' }}
+      run: |
+        echo "CC=${{ matrix.platform.cc }}" >> $GITHUB_ENV
+        echo "CXX=${{ matrix.platform.cxx }}" >> $GITHUB_ENV
+
+    - uses: actions/checkout@v4
+
+    - name: Mark directory as safe in git
+      if: ${{ matrix.platform.container != '' }}
+      run: git config --global --add safe.directory "*" # I couldn't make it work with the particular directory
+
+    - name: Configure CMake
+      id: configure
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} ${{ matrix.platform.flags }}
+
+    - name: Build
+      id: build
+      if: ${{ steps.configure.outcome == 'success' }}
+      run: cmake --build build --config ${{ matrix.configuration }} --parallel ${{ matrix.platform.threads || 4 }}
+
+    - name: Test
+      id: test
+      if: ${{ steps.build.outcome == 'success' }}
+      working-directory: build
+      run: ctest
+
+  bsd:
+    name: ${{ matrix.platform.name }} ${{ matrix.configuration }} ${{ matrix.platform.arch }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - { name: FreeBSD, os: freebsd, os-version: '14.1', arch: x86_64,
+            install-cmd: "sudo pkg update && sudo pkg install -y git cmake"
+          }
+        - { name: OpenBSD, os: openbsd, os-version: '7.5',  arch: x86_64,
+            install-cmd: "sudo pkg_add git cmake",
+          }
+        - { name: NetBSD,  os: netbsd,  os-version: '10.0',  arch: x86_64,
+            install-cmd: "sudo pkgin -y install git cmake",
+          }
+        configuration: [Debug, Release]
+
+    steps:
+    - name: Setup ${{ matrix.platform.name }} and packages
+      uses: cross-platform-actions/action@v0.25.0
+      with:
+        operating_system: ${{ matrix.platform.os }}
+        architecture: ${{ matrix.platform.arch }}
+        version: ${{ matrix.platform.os-version }}
+        cpu_count: 4
+        memory: 13G
+        shutdown_vm: false
+        sync_files: false
+        run: ${{ matrix.platform.install-cmd }}
+
+    - uses: actions/checkout@main
+
+    - name: Configure CMake
+      uses: cross-platform-actions/action@v0.25.0
+      with:
+        operating_system: ${{ matrix.platform.os }}
+        architecture: ${{ matrix.platform.arch }}
+        version: ${{ matrix.platform.os-version }}
+        cpu_count: 4
+        memory: 13G
+        shutdown_vm: false
+        sync_files: runner-to-vm
+        run: cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.Configuration }}
+
+    - name: Build
+      uses: cross-platform-actions/action@v0.25.0
+      with:
+        operating_system: ${{ matrix.platform.os }}
+        architecture: ${{ matrix.platform.arch }}
+        version: ${{ matrix.platform.os-version }}
+        cpu_count: 4
+        memory: 13G
+        shutdown_vm: true
+        sync_files: false
+        run: cmake --build build --config ${{ matrix.Configuration }} --parallel 4
